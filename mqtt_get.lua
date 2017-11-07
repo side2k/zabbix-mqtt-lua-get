@@ -9,14 +9,16 @@ local long_opts = {
     host = "h",
     topic = "t",
     help = "H",
+    timeout = "T",
 }
 
 local default_opts = {
     t = "/#",
     h = "localhost",
+    T = "0.1",
 }
 
-parsed_args = get_opts(arg, "Hvh:t:C:", long_opts)
+parsed_args = get_opts(arg, "Hvh:t:T:", long_opts)
 
 if parsed_args.H then
     print([[
@@ -26,6 +28,10 @@ Command line options:
         (default: localhost)
     -t <topic>, --topic <topic>
         (default: /#)
+    -T <timeout>, --timeout <timeout>
+        timeout in seconds for data packet waiting. By default timeout
+        is 0.1(100 msec), whichcould be too small if your network
+        connection is very bad
     -v, --verbose
         print corresponding topic names
 
@@ -51,6 +57,6 @@ local callback = function(topic, data)
 end
 
 client:subscribe(parsed_args.t, 2, callback)
-client:message_loop(0)
+client:message_loop(tonumber(parsed_args.T))
 
 client:disconnect()
